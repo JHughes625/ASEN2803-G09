@@ -1,0 +1,100 @@
+clear
+clc
+close all
+
+%% Inputs
+
+x_0 = 20;
+y_0 = 0;
+z_0 = 47.0211566273060;
+g = 9.81;
+h_0 = 125;
+
+%% Function
+
+parabola(x_0,y_0,z_0,g,h_0);
+
+function [x_end,y_end,z_end] = parabola(x_0,y_0,z_0,g,h_0)
+
+%% initial up curve 
+
+% Calculating radius to fit within G limits
+r = (2 * g * (h_0 - z_0))/g/4.5
+
+% angle domain
+theta_1 = linspace(3*pi/2,7*pi/4,100);
+
+% parametric equations
+x_1 = r*cos(theta_1)+x_0;
+z_1 = r*sin(theta_1)+z_0+r;
+
+% finding velocity and G force
+v_1 = sqrt(2 * g * (h_0 - z_1));
+G_1 = v_1.^2./g./r-sin(theta_1);
+
+%% Zero G parabola
+
+% initial velocity
+v = sqrt(2 * g * (h_0 - z_1(end)));
+vx = v*cos(pi/4);
+vz = v*sin(pi/4);
+
+% t domain
+t_2 = linspace(0,2*v *cos(pi/4)/g,200);
+
+% parametric equations
+x_2 = x_1(end) + vx*t_2;
+z_2 = z_1(end) + -g*t_2.^2/2+vz*t_2;
+
+% finding velocity
+v_2 = sqrt(2 * g * (h_0 - z_2));
+
+% finding instantanious radius of curverture and angle
+R = (vx^2+(-g*t_2+vz).^2).^(3/2)/abs(vx*-g);
+theta = atan((-g*t_2+vz)/vx);
+
+% calculating G force
+G2 = v_2.^2./g./R - cos(theta);
+
+%% End Curve
+
+% angle domain
+theta_3 = linspace(5*pi/4,3*pi/2,100);
+
+% parametric equations
+x_3 = r*cos(theta_3)+x_2(end)+r*sin(pi/4);
+z_3 = r*sin(theta_3)+z_2(end)+r*sin(pi/4);
+
+% finding velocity and G force
+v_3 = sqrt(2 * g * (h_0 - z_3));
+G3 = v_3.^2./g./r-sin(theta_3);
+
+%% Outputs
+
+x_end = x_3(end);
+y_end = y_0;
+z_end = z_3(end);
+
+%% Plotting
+
+% Plotting track
+figure('Name','Track')
+hold on
+plot(x_1,z_1)
+plot(x_2,z_2)
+plot(x_3,z_3)
+title('Track')
+xlabel('x position')
+ylabel('y position')
+
+% Plotting G force
+figure('Name','G force')
+hold on
+plot(x_1,G_1)
+plot(x_2,G2)
+plot(x_3,G3)
+title('G force')
+xlabel('x position')
+ylabel('G force')
+
+end
