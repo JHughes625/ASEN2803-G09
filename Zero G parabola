@@ -19,7 +19,7 @@ function [x_end,y_end,z_end] = parabola(x_0,y_0,z_0,g,h_0)
 %% initial up curve 
 
 % Calculating radius to fit within G limits
-r = (2 * g * (h_0 - z_0))/g/4.5
+r = (2 * g * (h_0 - z_0))/g/4.5;
 
 % angle domain
 theta_1 = linspace(3*pi/2,7*pi/4,100);
@@ -31,6 +31,9 @@ z_1 = r*sin(theta_1)+z_0+r;
 % finding velocity and G force
 v_1 = sqrt(2 * g * (h_0 - z_1));
 G_1 = v_1.^2./g./r-sin(theta_1);
+
+% finding path length
+s_1 = r * pi/4;
 
 %% Zero G parabola
 
@@ -56,6 +59,9 @@ theta = atan((-g*t_2+vz)/vx);
 % calculating G force
 G2 = v_2.^2./g./R - cos(theta);
 
+% finding path length
+s_2 = integral(@(t) sqrt(vx^2+(-g*t+vz).^2),0,t_2(end));
+
 %% End Curve
 
 % angle domain
@@ -68,6 +74,9 @@ z_3 = r*sin(theta_3)+z_2(end)+r*sin(pi/4);
 % finding velocity and G force
 v_3 = sqrt(2 * g * (h_0 - z_3));
 G3 = v_3.^2./g./r-sin(theta_3);
+
+% finding path length
+s_3 = r * pi/4;
 
 %% Outputs
 
@@ -90,11 +99,11 @@ ylabel('y position')
 % Plotting G force
 figure('Name','G force')
 hold on
-plot(x_1,G_1)
-plot(x_2,G2)
-plot(x_3,G3)
+plot(linspace(0,s_1,100),G_1)
+plot(linspace(s_1,s_1+s_2,200),G2)
+plot(linspace(s_1+s_2,s_1+s_2+s_3,100),G3)
 title('G force')
-xlabel('x position')
+xlabel('s position')
 ylabel('G force')
 
 end
